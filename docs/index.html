@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="description" content="Brown Bag">
+	<meta name="author" content="Jason Wohlgemuth">
+	<title>Developing with Node</title>
+	<!-- Font Awesome! -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="components/reveal.js/css/reveal.css">
+	<link rel="stylesheet" href="components/reveal.js/css/theme/black.css" id="theme">
+	<!-- Code syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+	<link rel="stylesheet" href="css/custom.css">
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement( 'link' );
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match( /print-pdf/gi ) ? './components/reveal.js/css/print/pdf.css' : './components/reveal.js/css/print/paper.css';
+		document.getElementsByTagName( 'head' )[0].appendChild( link );
+	</script>
+
+	<!--[if lt IE 9]>
+	<script src="lib/js/html5shiv.js"></script>
+	<![endif]-->
+</head>
+<body>
+
+
+	<div class="reveal">
+	<div class="slides">
+		<section id="title" data-markdown>
+			<script type="text/template">
+				## Node.js In Depth
+				#### Developing *with* Node.js
+				<br /> [by Jason Wohlgemuth](https://twitter.com/@jhwohlgemuth)
+			</script>
+		</section>
+		<section id="intro" data-markdown data-transition="convex">
+			<script type="text/template">
+				## Who Am I?
+				##### Jason Wohlgemuth
+				<img src="img/profile.jpg" class="img-circle img-responsive img-center profile" />
+				<br /> [
+				<i class="fa fa-twitter" aria-hidden="true"></i>/@jhwohlgemuth](https://twitter.com/@jhwohlgemuth)&nbsp;&nbsp;&nbsp;[<i class="fa fa-github" aria-hidden="true"></i>/jhwohlgemuth](https://github.com/jhwohlgemuth)<br />
+			</script>
+		</section>
+		<section id="agenda">
+			<h2>Agenda</h2>
+			<ol>
+				<li class="fragment fade-up">Let's talk versions and long-term support</li>
+				<li class="fragment fade-up">Getting started with Node.js</li>
+				<li class="fragment fade-up">Write, Review, Build, Test, Deploy, Repeat</li>
+			</ol>
+		</section>
+		<section id="kind-of-a-big-deal" data-background="img/my-contribution.png" data-background-size="contain"></section>
+		<section id="gimme-some-socks" data-background="img/my-npm-contribution.png" data-background-size="contain"></section>
+		<section id="versioning">
+    <section id="version-fun-facts" data-markdown>
+        ## Node.js Versioning
+        - **Odd** number release --> Development
+        - **Even** number release --> LTS
+        - `npm` is bundled with Node.js
+        - `npx` is bundled with `npm`
+    </section>
+    <section id="lts-schedule" data-background="img/node-lts-schedule.png" data-background-size="contain"></section>
+    <section id="ecmascript-compatibility" data-background-iframe="https://kangax.github.io/compat-table/es6/"></section>
+</section>
+
+		<section id="getting-started">
+    <section id="installation" data-markdown>
+        ## Getting Started
+
+        1. Navigate to [nodejs.org/en/download/](https://nodejs.org/en/download/)
+        2. Download version for your needs
+        3. Install
+    </section>
+    <section id="advice-1">
+        <h3>Advice #1</h3>
+        <blockquote>Use the "node version manager", <code>nvm</code></blockquote>
+        <p><a href="https://github.com/creationix/nvm#install-script">view install instructions</a></p>
+        <pre class="fragment"><code class="bash">
+    # Install latest version of node
+    nvm install node
+
+    # Use the latest version of node
+    nvm use node
+
+    # Make it the default version
+    nvm alias default node
+        </code></pre>
+    </section>
+    <section id="advice-2" data-markdown>
+        ### Advice #2
+        > Use Linux
+
+        - "Better" support for build tools and ecosystem
+        - No file path limit
+    </section>
+    <section id="advice-3">
+        <h3>Advice #3</h3>
+        <blockquote>Use Linux...seriously</blockquote>
+        <p>Install <a href="https://www.virtualbox.org/">virtualbox</a> & <a href="https://www.vagrantup.com/">vagrant</a></p>
+        <pre class="fragment"><code class="bash">
+    cd C:\Users\username
+    vagrant init jhwohlgemuth/env
+    vagrant up
+
+    # save state for later
+    vagrant suspend
+        </code></pre>
+    </section>
+    <section id="after-node-is-installed">
+        <h3>After Node is installed...</h3>
+        <pre><code class="bash">
+    # Check your versions
+    node -v
+    npm -v
+    npx -v
+
+    # Create a package.json file
+    npm init
+
+    # Install modules locally and globally, dev and prod
+    npm install some-module
+    npm install some-module --global
+    npm install some-module --save-dev
+        </code></pre>
+    </section>
+    <section id="dangerous-to-go-alone" data-background="img/dangerous-to-go-alone.png">
+        <pre class="fragment"><code class="bash">
+    npm install --global --production windows-build-tools
+        </code></pre>
+    </section>
+</section>
+
+		<section id="doing-stuff">
+    <section id="running-node-code">
+        <h4>Suppose you have a package.json...</h4>
+        <pre><code class="json">
+    {
+        "devDependencies": {
+            "eslint": "^4.2.0",
+            "jest": "^20.0.4",
+            "watch": "^1.0.2"
+        },
+        "scripts": {
+            "lint": "eslint ./lib/*.js --fix",
+            "lint:watch": "watch 'npm run lint' ./lib",
+            "pretest": "npm run lint",
+            "test": "jest",
+            "test:watch": "npm test -- --watch"
+        }
+    }
+        </code></pre>
+    </section>
+    <section id="advice-4" data-background="img/using-ntl.png"></section>
+    <section id="advice-5">
+        <h3>Advice #5</h3>
+        <blockquote>Think global, install local, use <code>npx</code>.</blockquote>
+        <pre><code class="bash">
+    # scaffold a React app
+    npx create-react-app my-super-cool-app
+
+    # quickly configure a vue project
+    npx vue-cli init webpack my-super-cool-app
+
+    # what does the cow say?
+    npx cowsay moo
+        </code></pre>
+    </section>
+    <section id="dangerous-to-go-alone-again" data-background="img/dangerous-to-go-alone.png">
+        <pre class="fragment"><code class="bash">
+    npm install --global npx@latest
+        </code></pre>
+    </section>
+    <section id="write-review-build-and-test-code" data-background="img/npm-run-dev.png">
+        <span class="fragment" style="background-color:rgba(0,0,0,0.85);padding:20px 40px;border-radius:10px;">
+            <a href="https://github.com/jhwohlgemuth/voxelcss/blob/master/package.json#L67"><code>npm run dev</code></a>
+        </span>
+    </section>
+    <section id="deploy-code">
+        <h3>Deploy Node</h4>
+        <pre class="fragment"><code class="json">
+    {
+        "name": "my-super-cool-module",
+        "scripts": {
+            "preversion": "npm test",
+            "postversion": "git push && git push --tags"
+        }
+    }
+        </code></pre>
+        <pre class="fragment"><code class="bash">
+    # bump the version (patch, minor, major)
+    npm version minor
+
+    # publish to npm (private or public)
+    npm publish
+        </code></pre>
+    </section>
+</section>
+
+		<section id="references" data-background="img/web-surfing-time.gif">
+			<h3>References</h3>
+			<div style="padding:20px;background-color:rgba(0,0,0,0.8);border-radius:20px;">
+				<ul>
+					<li><a href="https://nodejs.org/en/foundation/">Node.js Foundation Homepage</a></li>
+					<li><a href="https://github.com/nodejs/LTS">Node.js Foundation LTS Working Group</a></li>
+					<li><a href="https://node.cool/">node.cool</a></li>
+					<li><a href="https://kangax.github.io/compat-table/es6/">ES6 Compatibility Table</a></li>
+					<li><a href="https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b">Introducing npx (post on Medium)</a></li>
+				</ul>
+			</div>
+		</section>
+	</div>
+</div>
+
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="components/reveal.js/js/reveal.js"></script>
+	<script>
+		// Full list of configuration options available at:
+		// https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			history: true,
+			center: true,
+			fragments: true,
+			transition: 'slide', // none/fade/slide/convex/concave/zoom
+			slideNumber: 'c/t',
+			// Optional reveal.js plugins
+			dependencies: [
+				{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+				// Interpret Markdown in <section> elements
+        		{ src: './components/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        		{ src: './components/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: './components/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+				{ src: './components/reveal.js/plugin/zoom-js/zoom.js', async: true },
+				{ src: './components/reveal.js/plugin/notes/notes.js', async: true }
+			]
+		});
+
+	</script>
+    <!-- Socket.io client-->
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script>
+            (function(){
+              Reveal.initialize({
+                history: true
+              });
+              var proto = window.location.protocol;
+              var h = window.location.host;
+              var val = proto+'//'+h;
+              console.log(val);
+              var socket = io.connect(val);
+              socket.on('slidechanged', function (data) {
+                Reveal.slide(data.indexh, data.indexv, data.indexf);
+              });
+            })();
+        </script>
+</body>
+</html>
+
