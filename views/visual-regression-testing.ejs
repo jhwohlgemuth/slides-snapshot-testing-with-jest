@@ -1,0 +1,64 @@
+<section>
+    <section id="visual-regression-testing" data-markdown>
+        ## Ingredients
+        - [Jest](https://facebook.github.io/jest/) - *Test framework*
+        - [jest-image-snapshot](https://github.com/americanexpress/jest-image-snapshot) - *Jest plugin*
+        - [puppeteer](https://github.com/GoogleChrome/puppeteer) - *Headless Chrome Node API*
+        - [http-server](https://www.npmjs.com/package/http-server) - *Lightweight http server*
+    </section>
+    <section id="start-static-server">
+        <div>
+            <h3>Start static server</h3>
+            <pre><code class="json">
+    {
+        "scripts": {
+            "server:start": "nohup http-server -p 1337 &"
+        }
+    }
+            </code></pre>
+        </div>
+    </section>
+    <section id="capture-screenshots">
+        <div>
+            <h3>Capture Screenshots</h3>
+            <pre><code class="js">
+    function captureScreenshots(options) {
+        return (async () => {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            await page.setViewport({width, height});
+            await page.goto(/* url */);
+            // perform action
+            await page.screenshot(/* path */);
+            browser.close();
+            return 'Capture Complete';
+        })();
+    }
+            </code></pre>
+        </div>
+    </section>
+    <section id="image-snapshot-testing">
+        <div>
+            <h3>Run snaphot tests</h3>
+            <pre><code class="js">
+    // First run will save snapshots
+
+    // Second run will preform comparisons
+
+    describe('Your software', function() {
+        it('can be free of visual regressions', () => {
+            return images.each(image => {
+                expect(image).toMatchImageSnapshot();
+            });
+        });
+    });
+            </code></pre>
+        </div>
+    </section>
+    <section id="examples" data-markdown>
+        ### Examples
+        - [generator-omaha](https://github.com/omahajs/generator-omaha) - *Yeoman generator*
+        - [Voxelcss](https://voxelcss.js.org/) - *3D cubes*
+        - [snapsvg-hexagonal](https://github.com/jhwohlgemuth/snapsvg-hexagonal) - *Snap.svg plugin*
+    </section>
+</section>

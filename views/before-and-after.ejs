@@ -1,0 +1,77 @@
+<section>
+    <section id="jest-before-and-after" data-markdown>
+        # Using Jest
+        ### Before and After
+    </section>
+    <section id="what-if-i-told-you" data-markdown data-background-image="img/what-if-i-told-you.png" data-background-size="contain"></section>
+    <section id="jest-before-and-after-dependencies-logos" class="stretch">
+        <div>
+            <h3>Before</h3>
+            <img src="img/dependencies-without-jest.png" alt="without Jest" style="border:none;background:none;box-shadow:none;" height="200">
+        </div>
+        <div class="fragment">
+            <h3>After</h3>
+            <img src="img/jest-banner.png" alt="without Jest" style="border:none;background:none;box-shadow:none;" height="200">
+        </div>
+    </section>
+    <section id="jest-before-and-after-dependencies" class="stretch">
+        <div>
+            <h4>Before</h4>
+            <pre><code class="json">
+    {
+        "dependencies": {
+            "chai": "^4.0.1",
+            "chai-shallow-deep-equal": "^1.4.6",
+            "istanbul": "^0.4.4",
+            "mocha": "^3.4.2",
+            "mocha-lcov-reporter": "^1.0.0",
+            "mocha-unfunk-reporter": "^0.4.0",
+            "nyc": "^11.0.2",
+        }
+    }
+            </code></pre>
+        </div>
+        <div class="fragment">
+            <h4>After</h4>
+            <pre><code class="json">
+    {
+        "dependencies": {
+            "jest": "^20.0.4"
+        }
+    }
+            </code></pre>
+        </div>
+    </section>
+    <section id="beforeAll">
+        <div>
+            <h4>Before</h4>
+            <pre><code class="js">
+    // Mocha uses before()
+    describe('Some Test Suite', function() {
+        before(() => {
+            // one-time setup
+        });
+        it('can be awesome', () => {/* expects and stuff */});
+    });
+            </code></pre>
+        </div>
+        <div class="fragment">
+            <h4>After</h4>
+            <pre><code class="js">
+    // Jest uses beforeAll()
+    describe('Some Test Suite', function() {
+        beforeAll(() => {
+            // one-time setup
+        });
+        it('can be awesome', () => {/* expects and stuff */});
+    });
+            </code></pre>
+        </div>
+    </section>
+    <section id="jest-before-and-after-chai" class="stretch" data-markdown data-background-image="img/you-might-not-need-chai.png" data-background-size="contain">
+        ### You might not need [chai](http://chaijs.com/)
+    </section>
+    <section id="jest-before-and-after-sinon" class="stretch" data-markdown data-background-image="img/you-might-not-need-sinon.png" data-background-size="contain">
+        ### You might not need [sinon](http://sinonjs.org/)
+    </section>
+</section>

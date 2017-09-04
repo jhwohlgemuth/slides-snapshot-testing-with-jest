@@ -1,8 +1,58 @@
 <section>
     <section id="why-jest" data-markdown>
         ### Why Jest?
-        - New and Shiny
-        - Snapshot testing
+        - ~~New and Shiny~~
         - Developer Experience
+        - Snapshot testing
+        - Super easy migration
+    </section>
+    <section id="new-and-shiny" data-markdown>
+        ### Facts
+        - *Actively* supported by **[Facebook](https://github.com/facebook)**
+        - v0.1.0 released **May 14, 2014**
+        - Current version === **"v20.0.4"**
+        - [11,975 stars on GitHub](https://github.com/facebook/jest/stargazers)
+        - Does ***NOT*** support AMD (*and prob never will*)
+    </section>
+    <section id="jest-developer-experience" data-markdown>
+        ### "Delightful JavaScript Testing"
+        - Easy setup (and migration)
+        - Colorized output
+        - Regex spec selection
+        - Batteries included:
+          - watch task
+          - expectations and mocking
+          - code coverage (via Istanbul)
+    </section>
+    <section id="snapshot-all-the-things" data-background-image="img/all-the-things.png">
+        <h2 style="color:#333;">Snapshot all the things</h2>
+        <h3 class="fragment" style="color:#333;">(not really)</h3>
+        <br><br><br><br><br><br>
+    </section>
+    <section id="snapshot-example">
+        <h3>Compare serializable values</h3>
+        <div>
+            <p>Without snapshots</p>
+            <pre><code class="js">
+        // output === {foo: 'foo', bar: 'bar'}
+        describe('Some test suite', function() {
+            it('can create an object', () => {
+                expect(output.foo).toEqual('foo');
+                expect(output.bar).toEqual('bar');
+            });
+        });
+            </code></pre>
+        </div>
+        <div class="fragment">
+            <p>With snapshots</p>
+            <pre><code class="js">
+        // output === {foo: 'foo', bar: 'bar'}
+        describe('Some test suite', function() {
+            it('can create an object', () => {
+                expect(output).toMatchSnapshot();
+            });
+        });
+            </code></pre>
+        </div>
     </section>
 </section>
