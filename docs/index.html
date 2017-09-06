@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="description" content="Brown Bag">
 	<meta name="author" content="Jason Wohlgemuth">
-	<title>Developing with Node</title>
+	<title>Snapshot Testing with Jest</title>
 	<!-- Font Awesome! -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="components/reveal.js/css/reveal.css">
@@ -35,14 +35,13 @@
 	<div class="slides">
 		<section id="title" data-markdown>
 			<script type="text/template">
-				## Node.js In Depth
-				#### Developing *with* Node.js
-				<br /> [by Jason Wohlgemuth](https://twitter.com/@jhwohlgemuth)
+				## Snapshot Testing with Jest
+				### *Believe* the hype
 			</script>
 		</section>
 		<section id="intro" data-markdown data-transition="convex">
 			<script type="text/template">
-				## Who Am I?
+				## Who am I?
 				##### Jason Wohlgemuth
 				<img src="img/profile.jpg" class="img-circle img-responsive img-center profile" />
 				<br /> [
@@ -52,155 +51,211 @@
 		<section id="agenda">
 			<h2>Agenda</h2>
 			<ol>
-				<li class="fragment fade-up">Let's talk versions and long-term support</li>
-				<li class="fragment fade-up">Getting started with Node.js</li>
-				<li class="fragment fade-up">Write, Review, Build, Test, Deploy, Repeat</li>
+				<li class="fragment fade-up">Jest...so what? big deal, who cares?</li>
+				<li class="fragment fade-up">Your project before and after Jest</li>
+				<li class="fragment fade-up">Snapshot testing</li>
+				<li class="fragment fade-up">Visual regression tests with image snapshots</li>
 			</ol>
 		</section>
-		<section id="kind-of-a-big-deal" data-background="img/my-contribution.png" data-background-size="contain"></section>
-		<section id="gimme-some-socks" data-background="img/my-npm-contribution.png" data-background-size="contain"></section>
-		<section id="versioning">
-    <section id="version-fun-facts" data-markdown>
-        ## Node.js Versioning
-        - **Odd** number release --> Development
-        - **Even** number release --> LTS
-        - `npm` is bundled with Node.js
-        - `npx` is bundled with `npm`
+		<section>
+    <section id="why-jest" data-markdown>
+        ### Why Jest?
+        - ~~New and Shiny~~
+        - Developer Experience
+        - Snapshot testing
+        - Super easy migration
     </section>
-    <section id="lts-schedule" data-background="img/node-lts-schedule.png" data-background-size="contain"></section>
-    <section id="ecmascript-compatibility" data-background-iframe="https://kangax.github.io/compat-table/es6/"></section>
-</section>
-
-		<section id="getting-started">
-    <section id="installation" data-markdown>
-        ## Getting Started
-
-        1. Navigate to [nodejs.org/en/download/](https://nodejs.org/en/download/)
-        2. Download version for your needs
-        3. Install
+    <section id="new-and-shiny" data-markdown>
+        ### Facts
+        - *Actively* supported by **[Facebook](https://github.com/facebook)**
+        - v0.1.0 released **May 14, 2014**
+        - Current version === **"v20.0.4"**
+        - [11,975 stars on GitHub](https://github.com/facebook/jest/stargazers)
+        - Does ***NOT*** support AMD (*and prob never will*)
     </section>
-    <section id="advice-1">
-        <h3>Advice #1</h3>
-        <blockquote>Use the "node version manager", <code>nvm</code></blockquote>
-        <p><a href="https://github.com/creationix/nvm#install-script">view install instructions</a></p>
-        <pre class="fragment"><code class="bash">
-    # Install latest version of node
-    nvm install node
-
-    # Use the latest version of node
-    nvm use node
-
-    # Make it the default version
-    nvm alias default node
-        </code></pre>
+    <section id="jest-developer-experience" data-markdown>
+        ### "Delightful JavaScript Testing"
+        - Easy setup (and migration)
+        - Colorized output
+        - Regex spec selection
+        - Batteries included:
+          - watch task
+          - expectations and mocking
+          - code coverage (via Istanbul)
     </section>
-    <section id="advice-2" data-markdown>
-        ### Advice #2
-        > Use Linux
-
-        - "Better" support for build tools and ecosystem
-        - No file path limit
+    <section id="snapshot-all-the-things" data-background-image="img/all-the-things.png">
+        <h2 style="color:#333;">Snapshot all the things</h2>
+        <h3 class="fragment" style="color:#333;">(not really)</h3>
+        <br><br><br><br><br><br>
     </section>
-    <section id="advice-3">
-        <h3>Advice #3</h3>
-        <blockquote>Use Linux...seriously</blockquote>
-        <p>Install <a href="https://www.virtualbox.org/">virtualbox</a> & <a href="https://www.vagrantup.com/">vagrant</a></p>
-        <pre class="fragment"><code class="bash">
-    cd C:\Users\username
-    vagrant init jhwohlgemuth/env
-    vagrant up
-
-    # save state for later
-    vagrant suspend
-        </code></pre>
-    </section>
-    <section id="after-node-is-installed">
-        <h3>After Node is installed...</h3>
-        <pre><code class="bash">
-    # Check your versions
-    node -v
-    npm -v
-    npx -v
-
-    # Create a package.json file
-    npm init
-
-    # Install modules locally and globally, dev and prod
-    npm install some-module
-    npm install some-module --global
-    npm install some-module --save-dev
-        </code></pre>
-    </section>
-    <section id="dangerous-to-go-alone" data-background="img/dangerous-to-go-alone.png">
-        <pre class="fragment"><code class="bash">
-    npm install --global --production windows-build-tools
-        </code></pre>
+    <section id="snapshot-example">
+        <h3>Compare serializable values</h3>
+        <div>
+            <p>Without snapshots</p>
+            <pre><code class="js">
+        // output === {foo: 'foo', bar: 'bar'}
+        describe('Some test suite', function() {
+            it('can create an object', () => {
+                expect(output.foo).toEqual('foo');
+                expect(output.bar).toEqual('bar');
+            });
+        });
+            </code></pre>
+        </div>
+        <div class="fragment">
+            <p>With snapshots</p>
+            <pre><code class="js">
+        // output === {foo: 'foo', bar: 'bar'}
+        describe('Some test suite', function() {
+            it('can create an object', () => {
+                expect(output).toMatchSnapshot();
+            });
+        });
+            </code></pre>
+        </div>
     </section>
 </section>
 
-		<section id="doing-stuff">
-    <section id="running-node-code">
-        <h4>Suppose you have a package.json...</h4>
-        <pre><code class="json">
+		<section>
+    <section id="jest-before-and-after" data-markdown>
+        # Using Jest
+        ### Before and After
+    </section>
+    <section id="what-if-i-told-you" data-markdown data-background-image="img/what-if-i-told-you.png" data-background-size="contain"></section>
+    <section id="jest-before-and-after-dependencies-logos" class="stretch">
+        <div>
+            <h3>Before</h3>
+            <img src="img/dependencies-without-jest.png" alt="without Jest" style="border:none;background:none;box-shadow:none;" height="200">
+        </div>
+        <div class="fragment">
+            <h3>After</h3>
+            <img src="img/jest-banner.png" alt="without Jest" style="border:none;background:none;box-shadow:none;" height="200">
+        </div>
+    </section>
+    <section id="jest-before-and-after-dependencies" class="stretch">
+        <div>
+            <h4>Before</h4>
+            <pre><code class="json">
     {
-        "devDependencies": {
-            "eslint": "^4.2.0",
-            "jest": "^20.0.4",
-            "watch": "^1.0.2"
-        },
-        "scripts": {
-            "lint": "eslint ./lib/*.js --fix",
-            "lint:watch": "watch 'npm run lint' ./lib",
-            "pretest": "npm run lint",
-            "test": "jest",
-            "test:watch": "npm test -- --watch"
+        "dependencies": {
+            "chai": "^4.0.1",
+            "chai-shallow-deep-equal": "^1.4.6",
+            "istanbul": "^0.4.4",
+            "mocha": "^3.4.2",
+            "mocha-lcov-reporter": "^1.0.0",
+            "mocha-unfunk-reporter": "^0.4.0",
+            "nyc": "^11.0.2",
         }
     }
-        </code></pre>
-    </section>
-    <section id="advice-4" data-background="img/using-ntl.png"></section>
-    <section id="advice-5">
-        <h3>Advice #5</h3>
-        <blockquote>Think global, install local, use <code>npx</code>.</blockquote>
-        <pre><code class="bash">
-    # scaffold a React app
-    npx create-react-app my-super-cool-app
-
-    # quickly configure a vue project
-    npx vue-cli init webpack my-super-cool-app
-
-    # what does the cow say?
-    npx cowsay moo
-        </code></pre>
-    </section>
-    <section id="dangerous-to-go-alone-again" data-background="img/dangerous-to-go-alone.png">
-        <pre class="fragment"><code class="bash">
-    npm install --global npx@latest
-        </code></pre>
-    </section>
-    <section id="write-review-build-and-test-code" data-background="img/npm-run-dev.png">
-        <span class="fragment" style="background-color:rgba(0,0,0,0.85);padding:20px 40px;border-radius:10px;">
-            <a href="https://github.com/jhwohlgemuth/voxelcss/blob/master/package.json#L67"><code>npm run dev</code></a>
-        </span>
-    </section>
-    <section id="deploy-code">
-        <h3>Deploy Node</h4>
-        <pre class="fragment"><code class="json">
+            </code></pre>
+        </div>
+        <div class="fragment">
+            <h4>After</h4>
+            <pre><code class="json">
     {
-        "name": "my-super-cool-module",
-        "scripts": {
-            "preversion": "npm test",
-            "postversion": "git push && git push --tags"
+        "dependencies": {
+            "jest": "^20.0.4"
         }
     }
-        </code></pre>
-        <pre class="fragment"><code class="bash">
-    # bump the version (patch, minor, major)
-    npm version minor
+            </code></pre>
+        </div>
+    </section>
+    <section id="beforeAll">
+        <div>
+            <h4>Before</h4>
+            <pre><code class="js">
+    // Mocha uses before()
+    describe('Some Test Suite', function() {
+        before(() => {
+            // one-time setup
+        });
+        it('can be awesome', () => {/* expects and stuff */});
+    });
+            </code></pre>
+        </div>
+        <div class="fragment">
+            <h4>After</h4>
+            <pre><code class="js">
+    // Jest uses beforeAll()
+    describe('Some Test Suite', function() {
+        beforeAll(() => {
+            // one-time setup
+        });
+        it('can be awesome', () => {/* expects and stuff */});
+    });
+            </code></pre>
+        </div>
+    </section>
+    <section id="jest-before-and-after-chai" class="stretch" data-markdown data-background-image="img/you-might-not-need-chai.png" data-background-size="contain">
+        ### You might not need [chai](http://chaijs.com/)
+    </section>
+    <section id="jest-before-and-after-sinon" class="stretch" data-markdown data-background-image="img/you-might-not-need-sinon.png" data-background-size="contain">
+        ### You might not need [sinon](http://sinonjs.org/)
+    </section>
+</section>
 
-    # publish to npm (private or public)
-    npm publish
-        </code></pre>
+		<section>
+    <section id="visual-regression-testing" data-markdown>
+        ## Ingredients
+        - [Jest](https://facebook.github.io/jest/) - *Test framework*
+        - [jest-image-snapshot](https://github.com/americanexpress/jest-image-snapshot) - *Jest plugin*
+        - [puppeteer](https://github.com/GoogleChrome/puppeteer) - *Headless Chrome Node API*
+        - [http-server](https://www.npmjs.com/package/http-server) - *Lightweight http server*
+    </section>
+    <section id="start-static-server">
+        <div>
+            <h3>Start static server</h3>
+            <pre><code class="json">
+    {
+        "scripts": {
+            "server:start": "nohup http-server -p 1337 &"
+        }
+    }
+            </code></pre>
+        </div>
+    </section>
+    <section id="capture-screenshots">
+        <div>
+            <h3>Capture Screenshots</h3>
+            <pre><code class="js">
+    function captureScreenshots(options) {
+        return (async () => {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            await page.setViewport({width, height});
+            await page.goto(/* url */);
+            // perform action
+            await page.screenshot(/* path */);
+            browser.close();
+            return 'Capture Complete';
+        })();
+    }
+            </code></pre>
+        </div>
+    </section>
+    <section id="image-snapshot-testing">
+        <div>
+            <h3>Run snaphot tests</h3>
+            <pre><code class="js">
+    // First run will save snapshots
+
+    // Second run will perform comparisons
+
+    describe('Your software', function() {
+        it('can be free of visual regressions', () => {
+            return images.each(image => {
+                expect(image).toMatchImageSnapshot();
+            });
+        });
+    });
+            </code></pre>
+        </div>
+    </section>
+    <section id="examples" data-markdown>
+        ### Examples
+        - [generator-omaha](https://github.com/omahajs/generator-omaha) - *Yeoman generator*
+        - [Voxelcss](https://voxelcss.js.org/) - *3D cubes*
+        - [snapsvg-hexagonal](https://github.com/jhwohlgemuth/snapsvg-hexagonal) - *Snap.svg plugin*
     </section>
 </section>
 
@@ -208,11 +263,11 @@
 			<h3>References</h3>
 			<div style="padding:20px;background-color:rgba(0,0,0,0.8);border-radius:20px;">
 				<ul>
-					<li><a href="https://nodejs.org/en/foundation/">Node.js Foundation Homepage</a></li>
-					<li><a href="https://github.com/nodejs/LTS">Node.js Foundation LTS Working Group</a></li>
-					<li><a href="https://node.cool/">node.cool</a></li>
-					<li><a href="https://kangax.github.io/compat-table/es6/">ES6 Compatibility Table</a></li>
-					<li><a href="https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b">Introducing npx (post on Medium)</a></li>
+					<li><a href="https://facebook.github.io/jest/">Jest Homepage</a></li>
+					<li><a href="https://github.com/americanexpress/jest-image-snapshot">jest image-snapshot plugin</a></li>
+					<li><a href="https://github.com/facebookincubator/create-react-app/pull/250#issuecomment-237098619">A note on Jest</a></li>
+					<li><a href="https://facebook.github.io/jest/blog/2016/07/27/jest-14.html#why-snapshot-testing">Why Snapshot Testing?</a></li>
+					<li><a href="https://benmccormick.org/2016/09/19/testing-with-jest-snapshots-first-impressions/">Testing with Snapshots: First Impressions</a></li>
 				</ul>
 			</div>
 		</section>
